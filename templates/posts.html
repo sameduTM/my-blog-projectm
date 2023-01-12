@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Posts</title>
+{% endblock %}
+
+{% block body %}
+{% block content %}
+<div class="row gx-4 gx-lg-5 justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <!-- Post preview-->
+        <div class="post-preview">
+            {% for post in posts %}
+            <a href="{{ url_for('blog', id=post.id) }}">
+                <h2 class="post-title">{{ post.title }}</h2>
+                <h3 class="post-subtitle">{{ post.subtitle }}</h3>
+            </a>
+            <p class="post-meta">
+                Posted by
+                <a href="#!">{{ post.posted_by }}</a>
+                on {{ post.posted_on.strftime("%B %d, %Y") }}
+            </p>
+            {% endfor %}
+        </div>
+        <!-- Divider-->
+        <hr class="my-4" />
+
+        <!-- Pager-->
+        <div class="text-right">
+            <a href="{{ url_for('posts', page=posts.prev_num) }}"
+                class="btn btn-outlook-dark{% if posts.page == 1 %}disabled{% endif %}">
+                &laquo;
+            </a>
+            {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+            {% if posts.page == page_num %}
+            <a href="{{ url_for('posts', page=page_num) }}" class="btn btn-dark">
+                {{ page_num }}
+            </a>
+            {% else %}
+            <a href="{{ url_for('posts', page=page_num) }}" class="btn btn-outline-dark">
+                {{ page_num }}
+            </a>
+            {% endif %}
+            {% else %}
+            ...
+            {% endif %}
+            {% endfor %}
+
+            <a href="{{ url_for('posts', page=posts.next_num) }}"
+                class="btn btn-outline-dark {% if posts.page == posts.pages %}disabled{% endif %}">
+                &raquo;
+            </a>
+        </div>
+        <p class="text-right mt-3">
+            Showing page {{ posts.page }} of {{ posts.pages }}
+        </p>
+    </div>
+
+</div>
+</div>
+{% endblock %}
+{% endblock %}
