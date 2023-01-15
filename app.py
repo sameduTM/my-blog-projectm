@@ -1,17 +1,16 @@
 from flask import Flask, render_template, request, redirect, current_app
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from sqlmodel import Session, select
-from flask_bootstrap import Bootstrap
+#from sqlmodel import Session, select
+#from flask_bootstrap import Bootstrap
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.app_context().push()
 db = SQLAlchemy(app)
 app.static_folder = 'static'
-Bootstrap(app)
+app.app_context().push()
 
 
 class avrilBlog(db.Model):
@@ -44,9 +43,6 @@ def contact():
     return render_template('contact.html')
 
 
-db.create_all()
-db.session.commit()
-
 
 @app.route('/blog/<int:id>', methods=['GET', 'POST'])
 def blog(id):
@@ -72,9 +68,9 @@ def new_post():
 ROWS_PER_PAGE = 2
 
 
+
 @app.route('/posts',  methods=['GET', 'POST'])
 def posts():
-    page = request.args.get('page', 1, type=int)
     if request.method == 'POST':
         post_title = request.form['title']
         post_subtitle = request.form['subtitle']
@@ -87,6 +83,7 @@ def posts():
 
         return redirect('/posts')
     else:
+        page = request.args.get('page', 1, type=int)
         all_posts = avrilBlog.query.order_by(avrilBlog.posted_on).paginate(
             page=page, per_page=ROWS_PER_PAGE)
         return render_template('posts.html', posts=all_posts)
@@ -113,6 +110,8 @@ def delete(id):
     db.session.delete(to_delete)
     db.session.commit()
     return redirect('/posts')
+
+db.create_all()
 
 
 if __name__ == '__main__':
